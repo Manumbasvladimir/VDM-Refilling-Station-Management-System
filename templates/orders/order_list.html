@@ -1,0 +1,212 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}
+Orders
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>🛒 Customer Orders</h3>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% if orders %}
+
+            <div class="table-responsive">
+
+                <table class="table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Order</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for order in orders %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        {{ order.order_number }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ order.customer.get_full_name }}
+
+                                    <br>
+
+                                    <small>
+                                        {{ order.customer.username }}
+                                    </small>
+
+                                </td>
+
+
+                                <td>
+                                    ₱{{ order.total_amount }}
+                                </td>
+
+
+                                <td>
+
+                                    <strong>
+                                        {{ order.get_status_display }}
+                                    </strong>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ order.created_at|date:"M d, Y h:i A" }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <a
+                                        href="{% url 'orders:order_detail' order.id %}"
+                                        class="btn btn-secondary"
+                                    >
+                                        View
+                                    </a>
+
+
+                                    {% if order.status != "DELIVERED" and order.status != "CANCELLED" %}
+
+                                        <form
+                                            method="POST"
+                                            action="{% url 'orders:update_order_status' order.id %}"
+                                            style="display:inline;"
+                                        >
+
+                                            {% csrf_token %}
+
+                                            <select
+                                                name="status"
+                                                onchange="this.form.submit()"
+                                                class="form-control"
+                                            >
+
+                                                <option value="">
+                                                    Change Status
+                                                </option>
+
+                                                {% if order.status == "PENDING" %}
+
+                                                    <option value="CONFIRMED">
+                                                        Confirmed
+                                                    </option>
+
+                                                {% endif %}
+
+
+                                                {% if order.status == "CONFIRMED" %}
+
+                                                    <option value="PREPARING">
+                                                        Preparing
+                                                    </option>
+
+                                                {% endif %}
+
+
+                                                {% if order.status == "PREPARING" %}
+
+                                                    <option value="OUT_FOR_DELIVERY">
+                                                        Out for Delivery
+                                                    </option>
+
+                                                {% endif %}
+
+
+                                                {% if order.status == "OUT_FOR_DELIVERY" %}
+
+                                                    <option value="DELIVERED">
+                                                        Delivered
+                                                    </option>
+
+                                                {% endif %}
+
+
+                                                <option value="CANCELLED">
+                                                    Cancelled
+                                                </option>
+
+                                            </select>
+
+                                        </form>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📦
+                </div>
+
+                <h3>No Orders</h3>
+
+                <p>
+                    There are currently no customer orders.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

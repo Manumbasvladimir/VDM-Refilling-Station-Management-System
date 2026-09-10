@@ -1,0 +1,185 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}
+Products
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+
+            <div>
+                <h3>Available Products</h3>
+
+                <p>
+                    Choose the water products you want to order.
+                </p>
+            </div>
+
+            <a
+                href="{% url 'products:cart' %}"
+                class="btn btn-primary"
+            >
+                🛒 View Cart
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% if products %}
+
+            <div class="product-grid">
+
+                {% for product in products %}
+
+                    <div class="product-card">
+
+                        <div class="product-image">
+
+                            {% if product.image %}
+
+                                <img
+                                    src="{{ product.image.url }}"
+                                    alt="{{ product.name }}"
+                                >
+
+                            {% else %}
+
+                                <div class="no-product-image">
+                                    💧
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="product-info">
+
+                            <span class="product-category">
+                                {{ product.get_category_display }}
+                            </span>
+
+                            <h3>
+                                {{ product.name }}
+                            </h3>
+
+
+                            {% if product.description %}
+
+                                <p>
+                                    {{ product.description }}
+                                </p>
+
+                            {% endif %}
+
+
+                            <div class="product-bottom">
+
+                                <strong class="product-price">
+                                    ₱{{ product.price }}
+                                </strong>
+
+                                {% if product.stock > 0 %}
+
+                                    <span class="stock-status">
+                                        {{ product.stock }} available
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="out-of-stock">
+                                        Out of stock
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            {% if product.stock > 0 %}
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'products:add_to_cart' product.id %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary product-order-btn"
+                                    >
+                                        🛒 Order
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    disabled
+                                >
+                                    Out of Stock
+                                </button>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    💧
+                </div>
+
+                <h3>No Products Available</h3>
+
+                <p>
+                    There are currently no available products.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,120 @@
+<aside class="sidebar">
+
+    <div class="brand">
+        <span class="brand-icon">💧</span>
+        <span>AquaFlow</span>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER -->
+        <!-- ================================================= -->
+
+        {% if user.role == "CUSTOMER" %}
+
+            <a href="{% url 'accounts:dashboard' %}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{% url 'customers:profile' %}">
+                👤 My Profile
+            </a>
+
+            <a href="{% url 'products:product_list' %}">
+                💧 Products
+            </a>
+
+            <a href="{% url 'products:cart' %}">
+                🛒 My Cart
+            </a>
+             <a href="{% url 'orders:my_orders' %}">
+             📦 My Orders
+              </a>
+            <a href="#">
+                🚚 Delivery
+            </a>
+
+            <a href="#">
+                💬 Feedback
+            </a>
+
+
+        <!-- ================================================= -->
+        <!-- STAFF -->
+        <!-- ================================================= -->
+
+        {% elif user.role == "STAFF" %}
+
+            <a href="{% url 'accounts:dashboard' %}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{% url 'customers:profile' %}">
+                👤 My Profile
+            </a>
+
+            <a href="{% url 'orders:order_list' %}">
+    🛒 Orders
+</a>
+
+            <a href="#">
+                🚚 Delivery
+            </a>
+
+            <a href="#">
+                📦 Inventory
+            </a>
+
+
+        <!-- ================================================= -->
+        <!-- OWNER / ADMIN -->
+        <!-- ================================================= -->
+
+        {% elif user.role == "OWNER" or user.is_superuser %}
+
+            <a href="{% url 'accounts:dashboard' %}">
+                🏠 Dashboard
+            </a>
+
+            <a href="{% url 'customers:profile' %}">
+                👤 My Profile
+            </a>
+
+            <a href="#">
+                👥 Customers
+            </a>
+
+            <a href="{% url 'products:manage_products' %}">
+                💧 Products
+            </a>
+
+            <a href="{% url 'orders:order_list' %}">
+    🛒 Orders
+</a>
+            <a href="#">
+                🚚 Delivery
+            </a>
+
+            <a href="#">
+                📦 Inventory
+            </a>
+
+            <a href="#">
+                📊 Reports
+            </a>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- LOGOUT -->
+        <!-- ================================================= -->
+
+        <a href="{% url 'accounts:logout' %}">
+            🚪 Logout
+        </a>
+
+    </nav>
+
+</aside>

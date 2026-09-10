@@ -1,0 +1,133 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}
+Product Details
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>💧 Product Details</h3>
+
+    </div>
+
+    <div class="card-body">
+
+        {% if product.image %}
+
+            <div style="margin-bottom: 20px;">
+
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                    style="
+                        width: 250px;
+                        height: 200px;
+                        object-fit: cover;
+                        border-radius: 10px;
+                    "
+                >
+
+            </div>
+
+        {% endif %}
+
+
+        <table class="table">
+
+            <tr>
+                <th>Name</th>
+                <td>{{ product.name }}</td>
+            </tr>
+
+            <tr>
+                <th>Category</th>
+                <td>{{ product.get_category_display }}</td>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <td>
+                    {{ product.description|default:"No description" }}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Price</th>
+                <td>₱{{ product.price }}</td>
+            </tr>
+
+            <tr>
+                <th>Stock</th>
+                <td>{{ product.stock }}</td>
+            </tr>
+
+            <tr>
+                <th>Availability</th>
+
+                <td>
+
+                    {% if product.is_available %}
+
+                        <span class="stock-status">
+                            Available
+                        </span>
+
+                    {% else %}
+
+                        <span class="out-of-stock">
+                            Unavailable
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            <tr>
+                <th>Created</th>
+                <td>{{ product.created_at }}</td>
+            </tr>
+
+            <tr>
+                <th>Last Updated</th>
+                <td>{{ product.updated_at }}</td>
+            </tr>
+
+        </table>
+
+
+        <div style="margin-top: 20px;">
+
+            <a
+                href="{% url 'products:update_product' product.id %}"
+                class="btn btn-primary"
+            >
+                ✏️ Edit
+            </a>
+
+            <a
+                href="{% url 'products:delete_product' product.id %}"
+                class="btn btn-danger"
+            >
+                🗑️ Delete
+            </a>
+
+            <a
+                href="{% url 'products:manage_products' %}"
+                class="btn btn-secondary"
+            >
+                ← Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

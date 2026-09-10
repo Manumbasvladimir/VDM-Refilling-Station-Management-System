@@ -1,0 +1,153 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}
+Order {{ order.order_number }}
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h3>
+            Order {{ order.order_number }}
+        </h3>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <!-- ========================= -->
+        <!-- ORDER INFORMATION -->
+        <!-- ========================= -->
+
+        <p>
+            <strong>Order Number:</strong>
+            {{ order.order_number }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ order.get_status_display }}
+        </p>
+
+        <p>
+            <strong>Date:</strong>
+            {{ order.created_at|date:"M d, Y h:i A" }}
+        </p>
+
+
+        <hr>
+
+
+        <!-- ========================= -->
+        <!-- PRODUCTS -->
+        <!-- ========================= -->
+
+        <h4>Order Items</h4>
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for item in order.items.all %}
+
+                <tr>
+
+                    <td>
+                        {{ item.product.name }}
+                    </td>
+
+                    <td>
+                        {{ item.quantity }}
+                    </td>
+
+                    <td>
+                        ₱{{ item.price }}
+                    </td>
+
+                    <td>
+                        ₱{{ item.subtotal }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <hr>
+
+
+        <!-- ========================= -->
+        <!-- TOTAL -->
+        <!-- ========================= -->
+
+        <h4>
+            Total:
+            ₱{{ order.total_amount }}
+        </h4>
+
+
+        <hr>
+
+
+        <!-- ========================= -->
+        <!-- DELIVERY -->
+        <!-- ========================= -->
+
+        <h4>Delivery Information</h4>
+
+        <p>
+            <strong>Address:</strong>
+        </p>
+
+        <p>
+            {{ order.delivery_address }}
+        </p>
+
+
+        {% if order.delivery_notes %}
+
+            <p>
+                <strong>Delivery Notes:</strong>
+            </p>
+
+            <p>
+                {{ order.delivery_notes }}
+            </p>
+
+        {% endif %}
+
+
+        <br>
+
+
+        <a
+            href="{% url 'accounts:dashboard' %}"
+            class="btn btn-primary"
+        >
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

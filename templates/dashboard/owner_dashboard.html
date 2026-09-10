@@ -1,0 +1,41 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}
+Owner Dashboard
+{% endblock %}
+
+{% block dashboard_content %}
+
+<h2 class="mb-4">
+    Dashboard
+</h2>
+
+<div class="row">
+
+    {% include "includes/stat_card.html" with title="Today's Orders" value="0" %}
+
+    {% include "includes/stat_card.html" with title="Today's Sales" value="₱0.00" %}
+
+    {% include "includes/stat_card.html" with title="Customers" value="0" %}
+
+    {% include "includes/stat_card.html" with title="Products" value="0" %}
+
+</div>
+
+<div class="card mt-4">
+
+    <div class="card-header">
+
+        Recent Orders
+
+    </div>
+
+    <div class="card-body">
+
+        No orders available.
+
+    </div>
+
+</div>
+
+{% endblock %}
