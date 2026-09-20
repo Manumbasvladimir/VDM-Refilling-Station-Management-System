@@ -331,10 +331,24 @@ def update_order_status(request, order_id):
         valid_statuses = [
             Order.Status.CONFIRMED,
             Order.Status.PREPARING,
-            Order.Status.OUT_FOR_DELIVERY,
-            Order.Status.DELIVERED,
             Order.Status.CANCELLED,
         ]
+
+        # "Out for Delivery" and "Delivered" are no longer set directly here.
+        # They're driven by the Delivery app (assign a rider, then the rider
+        # updates status), so the two stay in sync and orders can't be
+        # marked delivered without an actual delivery record.
+        if new_status in [Order.Status.OUT_FOR_DELIVERY, Order.Status.DELIVERED]:
+
+            messages.error(
+                request,
+                "Use the Delivery screen to assign a rider and update "
+                "delivery progress for this order."
+            )
+
+            return redirect(
+                "orders:order_list"
+            )
 
         if new_status not in valid_statuses:
 
@@ -346,49 +360,6 @@ def update_order_status(request, order_id):
             return redirect(
                 "orders:order_list"
             )
-
-        # Prevent changing a completed order
-        if order.status == Order.Status.DELIVERED:
-
-            messages.error(
-                request,
-                "A delivered order cannot be changed."
-            )
-
-            return redirect(
-                "orders:order_list"
-            )
-
-        # Prevent changing a cancelled order
-        if order.status == Order.Status.CANCELLED:
-
-            messages.error(
-                request,
-                "A cancelled order cannot be changed."
-            )
-
-            return redirect(
-                "orders:order_list"
-            )
-
-        order.status = new_status
-
-        order.save(
-            update_fields=[
-                "status",
-                "updated_at",
-            ]
-        )
-
-        messages.success(
-            request,
-            f"Order {order.order_number} is now "
-            f"{order.get_status_display()}."
-        )
-
-    return redirect(
-        "orders:order_list"
-    )
 # ==========================================================
 # CUSTOMER - MY ORDERS
 # ==========================================================

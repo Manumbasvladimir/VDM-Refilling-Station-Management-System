@@ -109,71 +109,35 @@ Orders
                                     </a>
 
 
-                                    {% if order.status != "DELIVERED" and order.status != "CANCELLED" %}
+                                   {% if order.status == "PENDING" or order.status == "CONFIRMED" %}
 
-                                        <form
-                                            method="POST"
-                                            action="{% url 'orders:update_order_status' order.id %}"
-                                            style="display:inline;"
-                                        >
+    <form method="POST" action="{% url 'orders:update_order_status' order.id %}" style="display:inline;">
+        {% csrf_token %}
+        <select name="status" onchange="this.form.submit()" class="form-control">
+            <option value="">Change Status</option>
+            {% if order.status == "PENDING" %}
+                <option value="CONFIRMED">Confirmed</option>
+            {% endif %}
+            {% if order.status == "CONFIRMED" %}
+                <option value="PREPARING">Preparing</option>
+            {% endif %}
+            <option value="CANCELLED">Cancelled</option>
+        </select>
+    </form>
 
-                                            {% csrf_token %}
+{% elif order.status == "PREPARING" %}
 
-                                            <select
-                                                name="status"
-                                                onchange="this.form.submit()"
-                                                class="form-control"
-                                            >
+    <a href="{% url 'delivery:assign_list' %}" class="btn btn-primary">
+        🚚 Assign Rider
+    </a>
 
-                                                <option value="">
-                                                    Change Status
-                                                </option>
+{% elif order.status == "OUT_FOR_DELIVERY" or order.status == "DELIVERED" %}
 
-                                                {% if order.status == "PENDING" %}
+    <a href="{% url 'delivery:tracking' order.delivery.id %}" class="btn btn-secondary">
+        📍 Track Delivery
+    </a>
 
-                                                    <option value="CONFIRMED">
-                                                        Confirmed
-                                                    </option>
-
-                                                {% endif %}
-
-
-                                                {% if order.status == "CONFIRMED" %}
-
-                                                    <option value="PREPARING">
-                                                        Preparing
-                                                    </option>
-
-                                                {% endif %}
-
-
-                                                {% if order.status == "PREPARING" %}
-
-                                                    <option value="OUT_FOR_DELIVERY">
-                                                        Out for Delivery
-                                                    </option>
-
-                                                {% endif %}
-
-
-                                                {% if order.status == "OUT_FOR_DELIVERY" %}
-
-                                                    <option value="DELIVERED">
-                                                        Delivered
-                                                    </option>
-
-                                                {% endif %}
-
-
-                                                <option value="CANCELLED">
-                                                    Cancelled
-                                                </option>
-
-                                            </select>
-
-                                        </form>
-
-                                    {% endif %}
+{% endif %}
 
                                 </td>
 

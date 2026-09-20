@@ -1,0 +1,124 @@
+{% extends "layouts/dashboard.html" %}
+
+{% load static %}
+
+{% block title %}Track Delivery — {{ delivery.order.order_number }}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/delivery.css' %}">
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="card">
+
+    <div class="card-header">
+        <h3>🚚 {{ delivery.order.order_number }}</h3>
+    </div>
+
+    <div class="card-body">
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Progress Tracker -->
+        <div class="tracker mb-4">
+            <div class="tracker-step {% if delivery.status != 'PENDING' %}done{% endif %}">
+                <span>1</span> Assigned
+            </div>
+            <div class="tracker-step {% if delivery.status == 'OUT_FOR_DELIVERY' or delivery.status == 'DELIVERED' %}done{% endif %}">
+                <span>2</span> Out for Delivery
+            </div>
+            <div class="tracker-step {% if delivery.status == 'DELIVERED' %}done{% endif %}">
+                <span>3</span> Delivered
+            </div>
+        </div>
+
+        <table class="table table-borderless">
+            <tr>
+                <th>Status</th>
+                <td>
+                    <span class="status-badge status-{{ delivery.status|lower }}">
+                        {{ delivery.get_status_display }}
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <th>Customer</th>
+                <td>{{ delivery.order.customer.get_full_name|default:delivery.order.customer.username }}</td>
+            </tr>
+            <tr>
+                <th>Delivery Address</th>
+                <td>{{ delivery.order.delivery_address }}</td>
+            </tr>
+            <tr>
+                <th>Rider</th>
+                <td>
+                    {% if delivery.rider %}
+                        {{ delivery.rider.get_full_name|default:delivery.rider.username }}
+                    {% else %}
+                        <span class="text-muted">Not yet assigned</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% if delivery.notes %}
+                <tr>
+                    <th>Notes</th>
+                    <td>{{ delivery.notes }}</td>
+                </tr>
+            {% endif %}
+        </table>
+
+        {% if can_update_status %}
+
+            {% if delivery.status == "ASSIGNED" %}
+                <form method="POST" action="{% url 'delivery:update_status' delivery.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="start">
+                    <button type="submit" class="btn btn-primary">
+                        🚴 Start Delivery (Out for Delivery)
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if delivery.status == "OUT_FOR_DELIVERY" %}
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <form method="POST" action="{% url 'delivery:update_status' delivery.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delivered">
+                            <textarea name="notes" class="form-control mb-2" placeholder="Optional delivery notes"></textarea>
+                            <button type="submit" class="btn btn-success">
+                                ✅ Mark as Delivered
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="POST" action="{% url 'delivery:update_status' delivery.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="failed">
+                            <textarea name="notes" class="form-control mb-2" placeholder="Reason for failed delivery" required></textarea>
+                            <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Mark this delivery as failed?');">
+                                ⚠️ Mark as Failed
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'orders:order_detail' delivery.order.id %}" class="btn btn-outline-secondary">
+        ← Back to Order
+    </a>
+</div>
+
+{% endblock %}

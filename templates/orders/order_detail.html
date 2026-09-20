@@ -137,7 +137,11 @@ Order {{ order.order_number }}
 
 
         <br>
-
+        {% if order.delivery.status != "PENDING" %}
+    <a href="{% url 'delivery:tracking' order.delivery.id %}" class="btn btn-secondary">
+        📍 Track Delivery
+    </a>
+        {% endif %}
 
         <a
             href="{% url 'accounts:dashboard' %}"

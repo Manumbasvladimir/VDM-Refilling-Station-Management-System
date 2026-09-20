@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Assign Delivery{% endblock %}
+{% block title %}My Delivery Queue{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/delivery.css' %}">
@@ -13,7 +13,7 @@
 <div class="card">
 
     <div class="card-header">
-        <h3>📦 Ready for Delivery</h3>
+        <h3>🚴 My Delivery Queue</h3>
     </div>
 
     <div class="card-body">
@@ -24,11 +24,6 @@
             {% endfor %}
         {% endif %}
 
-        <p class="text-muted">
-            Orders show up here once staff mark them as <strong>Preparing</strong>.
-            Pick a rider to send them out for delivery.
-        </p>
-
         {% if deliveries %}
 
             <div class="table-responsive">
@@ -37,8 +32,9 @@
                         <tr>
                             <th>Order</th>
                             <th>Customer</th>
-                            <th>Delivery Address</th>
-                            <th>Assign Rider</th>
+                            <th>Address</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,11 +44,14 @@
                                 <td>{{ delivery.order.customer.get_full_name|default:delivery.order.customer.username }}</td>
                                 <td>{{ delivery.order.delivery_address }}</td>
                                 <td>
-                                    <form method="POST" action="{% url 'delivery:assign' delivery.id %}" class="d-flex gap-2">
-                                        {% csrf_token %}
-                                        {{ form.rider }}
-                                        <button type="submit" class="btn btn-primary">Assign</button>
-                                    </form>
+                                    <span class="status-badge status-{{ delivery.status|lower }}">
+                                        {{ delivery.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'delivery:tracking' delivery.id %}" class="btn btn-primary">
+                                        Open
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -64,19 +63,13 @@
 
             <div class="empty-state">
                 <div class="empty-icon">✅</div>
-                <h3>Nothing to Assign</h3>
-                <p>No orders are currently ready for delivery assignment.</p>
+                <h3>No Deliveries Assigned</h3>
+                <p>You're all caught up — nothing waiting in your queue.</p>
             </div>
 
         {% endif %}
 
     </div>
-</div>
-
-<div class="mt-3">
-    <a href="{% url 'delivery:list' %}" class="btn btn-outline-secondary">
-        ← Back to Deliveries
-    </a>
 </div>
 
 {% endblock %}

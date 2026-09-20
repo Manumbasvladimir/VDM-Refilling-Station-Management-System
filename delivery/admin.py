@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Delivery
+
+
+@admin.register(Delivery)
+class DeliveryAdmin(admin.ModelAdmin):
+    list_display = ("order", "rider", "status", "assigned_at", "delivered_at")
+    list_filter = ("status",)
+    search_fields = ("order__order_number", "rider__username")
